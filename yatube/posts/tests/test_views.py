@@ -164,7 +164,7 @@ class PostViewsTest(TestCase):
                 self.assertEqual(post.author, self.user)
 
     def test_cache(self):
-        post_for_delete = Post.objects.create(
+        Post.objects.create(
             text='Test cache',
             author=self.user
         )
