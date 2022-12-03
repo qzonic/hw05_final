@@ -36,10 +36,6 @@ class PostViewsTest(TestCase):
             content=small_gif,
             content_type='image/gif'
         )
-        cls.post_for_delete = Post.objects.create(
-            text='Test cache',
-            author=cls.user
-        )
         cls.post = Post.objects.create(
             text='Это текст первого тестового поста',
             author=cls.user,
@@ -55,6 +51,7 @@ class PostViewsTest(TestCase):
         self.third_authorized_client = Client()
         self.second_authorized_client.force_login(self.second_user)
         self.third_authorized_client.force_login(self.third_user)
+        cache.clear()
 
     def test_pages_uses_correct_template(self):
         pages_names_templates = {
@@ -96,7 +93,7 @@ class PostViewsTest(TestCase):
 
         for reverse_name, ctx in pages_names_templates.items():
             with self.subTest(reverse_name=reverse_name):
-                response = self.authorized_client.get(reverse_name)
+                response = self.guest_client.get(reverse_name)
                 if ctx != 'post':
                     post = response.context.get(ctx)[0]
                 else:
@@ -167,9 +164,13 @@ class PostViewsTest(TestCase):
                 self.assertEqual(post.author, self.user)
 
     def test_cache(self):
+        post_for_delete = Post.objects.create(
+            text='Test cache',
+            author=self.user
+        )
         first_response = self.authorized_client.get('/')
         old_posts = first_response.content
-        Post.objects.filter(id=self.post_for_delete.id).delete()
+        Post.objects.filter(text='Test cache').delete()
         second_response = self.authorized_client.get('/')
         new_posts = second_response.content
         self.assertEqual(old_posts, new_posts)
@@ -250,6 +251,7 @@ class PostPaginatorTest(TestCase):
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        cache.clear()
 
     def test_first_page_contains_ten_records(self):
         pages_names_templates = {
