@@ -1,1 +1,2 @@
 TEN_POSTS: int = 10
+FIRST_15_LETTERS = 15
