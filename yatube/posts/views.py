@@ -42,7 +42,8 @@ def profile(request, username):
         'following': False
     }
     if request.user.is_authenticated:
-        context['following'] = Follow.objects.filter(user=request.user).filter(author=author).exists()
+        context['following'] = Follow.objects.filter(
+            user=request.user).filter(author=author).exists()
     return render(request, 'posts/profile.html', context)
 
 
@@ -125,8 +126,9 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if author != request.user:
-        Follow.objects.get_or_create(user=request.user,
-                                                       author=author)
+        Follow.objects.get_or_create(
+            user=request.user,
+            author=author)
     return redirect(reverse('posts:profile',
                             kwargs={'username': username}))
 
