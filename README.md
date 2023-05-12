@@ -59,3 +59,6 @@ python manage.py createsuperuser
 ```
 python manage.py runserver
 ```
+
+### Автор
+[![telegram](https://img.shields.io/badge/Telegram-Join-blue)](https://t.me/qzonic)
